@@ -67,7 +67,7 @@
             <td>{{product.weight}}</td>
             <td>{{product.price}}</td>
             <td>{{product.status}}</td>
-            <td>{{product.created_at}}</td>
+            <td>{{product.created_at | data}}</td>
             </tr>
         </tbody>
         <tbody v-if="searchingProductsKey">
@@ -79,7 +79,7 @@
             <td>{{product.weight}}</td>
             <td>{{product.price}}</td>
             <td>{{product.status}}</td>
-            <td>{{product.created_at}}</td>
+            <td>{{product.created_at | data}}</td>
             </tr>
         </tbody>
     </table>
@@ -142,6 +142,14 @@ let app = new Vue({
             axios.get('/products').then(data => {
                 this.products = data.data;
             });
+        }
+    },
+    filters: {
+        data: function(value){
+            value = value.split('T');
+            value[1] = value[1].split('.');
+            value = value[0] + " " + value[1][0];
+            return value;
         }
     }
 })
