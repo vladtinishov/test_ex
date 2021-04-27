@@ -58,8 +58,20 @@
             <!-- <th scope="col">Дата добавления</th> -->
             </tr>
         </thead>
-        <tbody>
+        <tbody v-if="allProductsKey">
             <tr v-for="product in products">
+            <th scope="row">{{product.id}}</th>
+            <td>{{product.product_name}}</td>
+            <td>{{product.articul}}</td>
+            <td>{{product.category}}</td>
+            <td>{{product.weight}}</td>
+            <td>{{product.price}}</td>
+            <td>{{product.status}}</td>
+            <td>{{product.created_at}}</td>
+            </tr>
+        </tbody>
+        <tbody v-if="searchingProductsKey">
+            <tr v-for="product in searchingProducts">
             <th scope="row">{{product.id}}</th>
             <td>{{product.product_name}}</td>
             <td>{{product.articul}}</td>
@@ -87,9 +99,13 @@ let app = new Vue({
         products: [],
         formKey: false,
         backKey: false,
+        allProductsKey: true,
+        searchingProductsKey: false,
         searchingData: {
             param: '',
-        }
+        },
+        searchingProducts: [],
+        
     },
     mounted: function(){
         axios.get('/products').then(data => {
@@ -100,7 +116,7 @@ let app = new Vue({
         openForm: function(param){
             this.formKey = true;
             this.searchingData.param = param;
-            document.getElementById('value').placeholder = param;
+            // document.getElementById('value').placeholder = param;
         },
         closeFrom: function(){
             this.formKey = false
@@ -108,15 +124,21 @@ let app = new Vue({
         search: function(){
             this.backKey = true;
             this.formKey = false;
+            this.allProductsKey = false;
+            this.searchingProductsKey = true;
             let value = document.getElementById('value').value;
             let param = this.searchingData.param;
             axios.get('/products/search', {params: {param: param, value: value}})
                 .then(data => {
-                    this.products = data.data;
+                    this.searchingProducts.push(data.data[0]);
+                    console.log(this.searchingProducts);
                 })
         },
         back: function(){
             this.backKey = false;
+            this.allProductsKey = true;
+            this.searchingProductsKey = false;
+            this.searchingProducts = [];
             axios.get('/products').then(data => {
                 this.products = data.data;
             });
