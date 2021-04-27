@@ -71,7 +71,7 @@
             </tr>
         </tbody>
         <tbody v-if="searchingProductsKey">
-            <tr v-for="product in searchingProducts">
+            <tr v-for="product in searchingProducts[0]">
             <th scope="row">{{product.id}}</th>
             <td>{{product.product_name}}</td>
             <td>{{product.articul}}</td>
@@ -101,11 +101,12 @@ let app = new Vue({
         backKey: false,
         allProductsKey: true,
         searchingProductsKey: false,
-        searchingData: {
-            param: '',
-        },
+        searchingData: [],
         searchingProducts: [],
         
+
+        filterData: {},
+        allFilters: [],
     },
     mounted: function(){
         axios.get('/products').then(data => {
@@ -116,23 +117,31 @@ let app = new Vue({
         openForm: function(param){
             this.formKey = true;
             this.searchingData.param = param;
-            // document.getElementById('value').placeholder = param;
+
+            //filters
+            this.filterData[0] = param;
         },
         closeFrom: function(){
             this.formKey = false
         },
         search: function(){
+            //keys
             this.backKey = true;
             this.formKey = false;
             this.allProductsKey = false;
             this.searchingProductsKey = true;
+            //
+
             let value = document.getElementById('value').value;
             let param = this.searchingData.param;
+
+            //filters
+            this.filterData[1] = value;
+            this.allFilters.push(this.filterData);
             axios.get('/products/search', {params: {param: param, value: value}})
                 .then(data => {
-                    this.searchingProducts.push(data.data[0]);
-                    console.log(this.searchingProducts);
-                })
+                    this.searchingProducts.push(data.data);
+                }).then(console.log(this.searchingProducts, this.allFilters))
         },
         back: function(){
             this.backKey = false;
