@@ -17,10 +17,10 @@
             <i @click="closeFrom" class="fa fa-times-circle" aria-hidden="true"></i>
             <input id="value" type="text">
             <br><br>
-            <button @click="search" type="button" class="btn btn-primary">Primary</button>
+            <button @click="search" type="button" class="btn btn-primary">Искать</button>
         </div>
     </div>
-    <table class="table table-borderless">
+    <table class="table table-bordered table-hover">
         <thead>
             <tr>
             <th scope="col">
@@ -71,7 +71,7 @@
             </tr>
         </tbody>
     </table>
-    <button v-if="backKey" @click="back" type="button" class="btn btn-primary">На главную</button>
+    <button v-if="backKey" @click="back" type="button" class="btn btn-primary to-main">На главную</button>
 </div>
 
 
