@@ -12,19 +12,28 @@ class ProductsController extends Controller
         return json_encode($allProducts);
     }
     public function search(Request $request){
-        $gotObj = $request->input('sql');
-        $sql = 'SELECT * FROM products WHERE ';
-        // foreach($gotObj as $key => $value){
-        //     if($value != ''){
-        //         $sql .= "$key = '$value' AND ";
-        //     }
-        // }
+        $gotObj = json_decode($request->input('sql'));
+        $sqlFull = 'select * from products where ';
+        $sql = '';
+        foreach($gotObj as $key => $value){
+            $val = $value->val;
+            $exp = $value->exp;
+            if($value->val != ''){
+                if($key == 'id' || $key == 'price' || $key == 'weight'){
+                    $sql = "$key $exp $val AND ";
+                }
+                else{
+                    $sql = "$key '$exp' $val AND ";
+                }
+            }
+        }
         // $sql = substr($sql,0,-4);
         // $j = DB::select($sql);
         // $sql = 'select * from products where ';
         // $sql .= $request->input('sql');
-        $sql .= substr($gotObj,0,-4);  
-        $result = DB::select($sql);
+        // $sql .= substr($sql,0,-4);  
+        $sqlFull .= substr($sql, 0, -4);
+        $result = DB::select($sqlFull);
         return json_encode($result);
     }
 }

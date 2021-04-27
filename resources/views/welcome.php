@@ -22,6 +22,7 @@
                 <button @click="setExp('>')">></button>
                 <button @click="setExp('=')">=</button>
                 <button @click="setExp('<')"><</button>
+                <button @click="deleteFilter('price')">delete price</button>
             </div>
         </div>
     </div>
@@ -153,23 +154,7 @@ let app = new Vue({
         closeFrom: function(){
             this.formKey = false
         },
-        createSql: function(){
-            for(let prop in this.filterData){
-                if(this.filterData[prop].val != 0 || this.filterData[prop].val != ''){
-                    if(prop == 'id' || prop == 'price' || prop == 'weight'){
-                        this.sql += prop + ' ' + 
-                                this.filterData[prop].exp + ' ' + 
-                                this.filterData[prop].val + ' and ';
-                    }
-                    else{
-                        this.sql += prop + ' ' + 
-                                this.filterData[prop].exp + ' "' + 
-                                this.filterData[prop].val + '" and ';
-                    }
-                    
-                }
-            }
-        },
+        
         search: function(){
             //keys
             this.backKey = true;
@@ -186,17 +171,21 @@ let app = new Vue({
             this.filterData[this.nameOfParam].val = this.valueOfParam;
             this.filterData[this.nameOfParam].exp = this.exp;
             // console.log(this.filterData);
-            this.createSql();
+            // this.createSql();
             console.log(this.sql);
             let sqlQuery = this.sql;
+            let fd = this.filterData;
             axios.get('/products/search', {params: {
-                                    sql: sqlQuery
+                                    sql: fd
                                 }
                             })
                 .then(data => {
                     this.searchingProducts = data.data;
                     console.log(data.data);
                 });
+        },
+        deleteFilter: function(prop){
+            this.filterData[prop].val = 0;
         },
         back: function(){
             this.backKey = false;
