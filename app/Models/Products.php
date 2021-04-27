@@ -11,7 +11,7 @@ class Products extends Model
     public static function getAll(){
         return static::take(10)->get();
     }
-    public static function getSearched($param = 'id', $value = 1){
+    public static function getSearched($param, $value){
         return static::where($param, $value)->get();
     }
 }

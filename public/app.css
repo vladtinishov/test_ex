@@ -27,3 +27,10 @@
 .to-main{
     margin-left: 10px;
 }
+
+tbody th {
+    color: rgb(48, 174, 224);
+}
+thead tr{
+    color: gray;
+}
