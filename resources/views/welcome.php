@@ -101,12 +101,20 @@ let app = new Vue({
         backKey: false,
         allProductsKey: true,
         searchingProductsKey: false,
-        searchingData: [],
+        searchingData: {},
         searchingProducts: [],
         
 
-        filterData: {},
-        allFilters: [],
+        filterData: {
+            id: 0,
+            product_name: '',
+            articul: '',
+            category: '',
+            weight: '',
+            price: '',
+            status: '',
+            // created_at: 0,
+        },
     },
     mounted: function(){
         axios.get('/products').then(data => {
@@ -117,9 +125,6 @@ let app = new Vue({
         openForm: function(param){
             this.formKey = true;
             this.searchingData.param = param;
-
-            //filters
-            this.filterData[0] = param;
         },
         closeFrom: function(){
             this.formKey = false
@@ -136,12 +141,24 @@ let app = new Vue({
             let param = this.searchingData.param;
 
             //filters
-            // this.filterData[1] = value;
-            // this.allFilters.push(this.filterData);
-            axios.get('/products/search', {params: {param: param, value: value}})
+            for(var key in this.filterData){
+                if(key === this.searchingData.param){
+                    if(key === 'id') value = Number(value);
+                    else{ 
+                        value = String(value);
+                        this.filterData[key] = value;
+                    }
+                    this.filterData[key] = value;
+                }
+            }
+            let searching_obj = this.filterData;
+            axios.get('/products/search', {params: {
+                                    searching_obj
+                                }
+                            })
                 .then(data => {
                     this.searchingProducts.push(data.data);
-                }).then(console.log(this.searchingProducts, this.allFilters))
+                }).then(console.log(this.searchingProducts))
         },
         back: function(){
             this.backKey = false;

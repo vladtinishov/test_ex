@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Products;
+use Illuminate\Support\Facades\DB;
 class ProductsController extends Controller
 {
     public function showAll(){ 
@@ -11,9 +12,15 @@ class ProductsController extends Controller
         return json_encode($allProducts);
     }
     public function search(Request $request){
-        $param = $request->input('param');
-        $value = $request->input('value');
-        $searchedProduct = Products::getSearched($param, $value);
-        return json_encode($searchedProduct);
+        $gotObj = json_decode($request->input('searching_obj'));
+        $sql = 'SELECT * FROM products WHERE ';
+        foreach($gotObj as $key => $value){
+            if($value != ''){
+                $sql .= "$key = '$value' ,";
+            }
+        }
+        $sql = substr($sql,0,-1);
+        $j = DB::select($sql);
+        return json_encode($j);
     }
 }
