@@ -27,12 +27,7 @@ class ProductsController extends Controller
                 }
             }
         }
-        if($sql == '') return '';
-        // $sql = substr($sql,0,-4);
-        // $j = DB::select($sql);
-        // $sql = 'select * from products where ';
-        // $sql .= $request->input('sql');
-        // $sql .= substr($sql,0,-4);  
+        if($sql == '') return '';  
         $sqlFull .= substr($sql, 0, -4);
         $result = DB::select($sqlFull);
         return json_encode($result);
