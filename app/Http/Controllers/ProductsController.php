@@ -16,10 +16,10 @@ class ProductsController extends Controller
         $sql = 'SELECT * FROM products WHERE ';
         foreach($gotObj as $key => $value){
             if($value != ''){
-                $sql .= "$key = '$value' ,";
+                $sql .= "$key = '$value' AND ";
             }
         }
-        $sql = substr($sql,0,-1);
+        $sql = substr($sql,0,-4);
         $j = DB::select($sql);
         return json_encode($j);
     }

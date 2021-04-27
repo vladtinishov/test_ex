@@ -16,8 +16,15 @@
         <div class="form">
             <i @click="closeFrom" class="fa fa-times-circle" aria-hidden="true"></i>
             <input id="value" type="text">
-            <br><br>
+            <br>
             <button @click="search" type="button" class="btn btn-primary">Искать</button>
+            <div class="filter_list">
+                <ul>
+                    <li v-for="value, param in filterData">
+                        <span @click="deleteFilter(param)">Очистить</span> {{param}} : {{value}}
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <table class="table table-bordered table-hover">
@@ -71,7 +78,7 @@
             </tr>
         </tbody>
         <tbody v-if="searchingProductsKey">
-            <tr v-for="product in searchingProducts[0]">
+            <tr v-for="product in searchingProducts">
             <th scope="row">{{product.id}}</th>
             <td>{{product.product_name}}</td>
             <td>{{product.articul}}</td>
@@ -79,7 +86,7 @@
             <td>{{product.weight}}</td>
             <td>{{product.price}}</td>
             <td>{{product.status}}</td>
-            <td>{{product.created_at | data}}</td>
+            <td>{{product.created_at }}</td>
             </tr>
         </tbody>
     </table>
@@ -110,8 +117,8 @@ let app = new Vue({
             product_name: '',
             articul: '',
             category: '',
-            weight: '',
-            price: '',
+            weight: 0,
+            price: 0,
             status: '',
             // created_at: 0,
         },
@@ -122,6 +129,16 @@ let app = new Vue({
         });
     },
     methods: {
+        deleteFilter: function(param){
+            for(var key in this.filterData){
+                if(key === param){
+                    if(key === 'id') this.filterData[key] = 0;
+                    else{ 
+                        this.filterData[key] = '';
+                    }
+                }
+            }
+        },
         openForm: function(param){
             this.formKey = true;
             this.searchingData.param = param;
@@ -143,7 +160,7 @@ let app = new Vue({
             //filters
             for(var key in this.filterData){
                 if(key === this.searchingData.param){
-                    if(key === 'id') value = Number(value);
+                    if(key === 'id' || key === 'price' || key === 'wieght') value = Number(value);
                     else{ 
                         value = String(value);
                         this.filterData[key] = value;
@@ -157,8 +174,9 @@ let app = new Vue({
                                 }
                             })
                 .then(data => {
-                    this.searchingProducts.push(data.data);
-                }).then(console.log(this.searchingProducts))
+                    this.searchingProducts = data.data;
+                    console.log(data.data);
+                });
         },
         back: function(){
             this.backKey = false;

@@ -34,3 +34,13 @@ tbody th {
 thead tr{
     color: gray;
 }
+span{
+    padding: 2px;
+    background: rgb(39, 34, 34);
+    border-radius: 3px;
+    color: white;
+    cursor: pointer;    
+}
+.filter_list{
+    margin-top: 10px;
+}
