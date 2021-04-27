@@ -19,11 +19,9 @@
             <br>
             <button @click="search" type="button" class="btn btn-primary">Искать</button>
             <div class="filter_list">
-                <ul>
-                    <li v-for="value, param in filterData">
-                        <span @click="deleteFilter(param)">Очистить</span> {{param}} : {{value}}
-                    </li>
-                </ul>
+                <button @click="setExp('>')">></button>
+                <button @click="setExp('=')">=</button>
+                <button @click="setExp('<')"><</button>
             </div>
         </div>
     </div>
@@ -113,15 +111,21 @@ let app = new Vue({
         
 
         filterData: {
-            id: 0,
-            product_name: '',
-            articul: '',
-            category: '',
-            weight: 0,
-            price: 0,
-            status: '',
-            // created_at: 0,
+            id: {val: 0, exp: '='},
+            product_name: {val: '', exp: '='},
+            articul: {val: '', exp: '='},
+            category: {val: '', exp: '='},
+            weight: {val: 0, exp: '='},
+            price: {val: 0, exp: '='},
+            status: {val: '', exp: '='},
         },
+
+        //new filter
+        nameOfParam: '',
+        valueOfParam: 0,
+        exp: '=',
+        sql: '',
+        expList: [],
     },
     mounted: function(){
         axios.get('/products').then(data => {
@@ -130,21 +134,41 @@ let app = new Vue({
     },
     methods: {
         deleteFilter: function(param){
-            for(var key in this.filterData){
-                if(key === param){
-                    if(key === 'id') this.filterData[key] = 0;
-                    else{ 
-                        this.filterData[key] = '';
-                    }
-                }
-            }
+            //delete
         },
         openForm: function(param){
             this.formKey = true;
             this.searchingData.param = param;
+
+            //new filter
+            this.nameOfParam = param;
+        },
+        openExpList: function(){
+            //open expressions list
+        },
+        setExp: function(exp){
+            //set expression
+            this.exp = exp;
         },
         closeFrom: function(){
             this.formKey = false
+        },
+        createSql: function(){
+            for(let prop in this.filterData){
+                if(this.filterData[prop].val != 0 || this.filterData[prop].val != ''){
+                    if(prop == 'id' || prop == 'price' || prop == 'weight'){
+                        this.sql += prop + ' ' + 
+                                this.filterData[prop].exp + ' ' + 
+                                this.filterData[prop].val + ' and ';
+                    }
+                    else{
+                        this.sql += prop + ' ' + 
+                                this.filterData[prop].exp + ' "' + 
+                                this.filterData[prop].val + '" and ';
+                    }
+                    
+                }
+            }
         },
         search: function(){
             //keys
@@ -157,20 +181,16 @@ let app = new Vue({
             let value = document.getElementById('value').value;
             let param = this.searchingData.param;
 
-            //filters
-            for(var key in this.filterData){
-                if(key === this.searchingData.param){
-                    if(key === 'id' || key === 'price' || key === 'wieght') value = Number(value);
-                    else{ 
-                        value = String(value);
-                        this.filterData[key] = value;
-                    }
-                    this.filterData[key] = value;
-                }
-            }
-            let searching_obj = this.filterData;
+            //new filter
+            this.valueOfParam = value;
+            this.filterData[this.nameOfParam].val = this.valueOfParam;
+            this.filterData[this.nameOfParam].exp = this.exp;
+            // console.log(this.filterData);
+            this.createSql();
+            console.log(this.sql);
+            let sqlQuery = this.sql;
             axios.get('/products/search', {params: {
-                                    searching_obj
+                                    sql: sqlQuery
                                 }
                             })
                 .then(data => {
