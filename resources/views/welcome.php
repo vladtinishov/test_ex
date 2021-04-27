@@ -22,7 +22,12 @@
                 <button @click="setExp('>')">></button>
                 <button @click="setExp('=')">=</button>
                 <button @click="setExp('<')"><</button>
-                <button @click="deleteFilter('price')">delete price</button>
+                <br>
+                <ul>
+                    <li v-for="value, key in allFilters">
+                        <span @click="deleteFilter(key)">del</span> {{key}} {{value.exp}} {{value.val}}
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -127,6 +132,10 @@ let app = new Vue({
         exp: '=',
         sql: '',
         expList: [],
+        filters: [],
+        allFilters: {
+            
+        },
     },
     mounted: function(){
         axios.get('/products').then(data => {
@@ -134,9 +143,6 @@ let app = new Vue({
         });
     },
     methods: {
-        deleteFilter: function(param){
-            //delete
-        },
         openForm: function(param){
             this.formKey = true;
             this.searchingData.param = param;
@@ -170,11 +176,10 @@ let app = new Vue({
             this.valueOfParam = value;
             this.filterData[this.nameOfParam].val = this.valueOfParam;
             this.filterData[this.nameOfParam].exp = this.exp;
-            // console.log(this.filterData);
-            // this.createSql();
             console.log(this.sql);
             let sqlQuery = this.sql;
             let fd = this.filterData;
+            console.log(fd);
             axios.get('/products/search', {params: {
                                     sql: fd
                                 }
@@ -183,9 +188,19 @@ let app = new Vue({
                     this.searchingProducts = data.data;
                     console.log(data.data);
                 });
+            this.getFilters();
         },
         deleteFilter: function(prop){
             this.filterData[prop].val = 0;
+        },
+        getFilters: function(){
+            Object.assign(this.allFilters, this.filterData)
+            for(let key in this.allFilters){
+                if(this.allFilters[key].val == '' || this.allFilters[key].val == 0){
+                    delete this.allFilters[key];
+                }
+            }
+            
         },
         back: function(){
             this.backKey = false;

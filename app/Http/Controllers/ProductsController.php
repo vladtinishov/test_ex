@@ -20,13 +20,14 @@ class ProductsController extends Controller
             $exp = $value->exp;
             if($value->val != ''){
                 if($key == 'id' || $key == 'price' || $key == 'weight'){
-                    $sql = "$key $exp $val AND ";
+                    $sql .= "$key $exp $val AND ";
                 }
                 else{
-                    $sql = "$key '$exp' $val AND ";
+                    $sql .= "$key $exp '$val' AND ";
                 }
             }
         }
+        if($sql == '') return '';
         // $sql = substr($sql,0,-4);
         // $j = DB::select($sql);
         // $sql = 'select * from products where ';
