@@ -136,8 +136,8 @@ let app = new Vue({
             let param = this.searchingData.param;
 
             //filters
-            this.filterData[1] = value;
-            this.allFilters.push(this.filterData);
+            // this.filterData[1] = value;
+            // this.allFilters.push(this.filterData);
             axios.get('/products/search', {params: {param: param, value: value}})
                 .then(data => {
                     this.searchingProducts.push(data.data);
